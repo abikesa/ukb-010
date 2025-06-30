@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🌀 Ukusoma: Signal Noise Toolkit</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Courier New', monospace;
+      background: radial-gradient(circle at 50% 50%, #0a0a2e, #16213e, #0f4c75);
+      color: #e0e6ed;
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    .cosmic-background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(2px 2px at 20px 30px, rgba(255,255,255,0.2), transparent),
+        radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.1), transparent),
+        radial-gradient(1px 1px at 90px 40px, rgba(255,255,255,0.3), transparent),
+        radial-gradient(1px 1px at 130px 80px, rgba(255,255,255,0.2), transparent),
+        radial-gradient(2px 2px at 160px 30px, rgba(255,255,255,0.1), transparent);
+      background-repeat: repeat;
+      background-size: 200px 100px;
+      animation: twinkle 8s ease-in-out infinite alternate;
+      z-index: -1;
+    }
+
+    @keyframes twinkle {
+      0% { opacity: 0.3; }
+      100% { opacity: 0.8; }
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      background: linear-gradient(45deg, #00d4ff, #ff6b6b, #4ecdc4, #45b7d1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-size: 400% 400%;
+      animation: gradient-flow 6s ease infinite;
+      text-shadow: 0 0 30px rgba(0,212,255,0.3);
+    }
+
+    @keyframes gradient-flow {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    .subtitle {
+      text-align: center;
+      font-size: 1.2rem;
+      margin-bottom: 3rem;
+      opacity: 0.8;
+      letter-spacing: 2px;
+    }
+
+    .pentad-wheel {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 3rem 0;
+      position: relative;
+      height: 300px;
+    }
+
+    .glyph-container {
+      position: relative;
+      width: 250px;
+      height: 250px;
+      margin: 0 auto;
+    }
+
+    .glyph-btn {
+      position: absolute;
+      width: 80px;
+      height: 80px;
+      border: none;
+      border-radius: 50%;
+      font-size: 2.5rem;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      color: white;
+      text-shadow: 0 0 20px currentColor;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    .glyph-btn:hover {
+      transform: scale(1.2) rotate(10deg);
+      box-shadow: 0 0 40px currentColor;
+      border-color: currentColor;
+    }
+
+    .glyph-btn:active {
+      transform: scale(0.95);
+    }
+
+    /* Pentagonal positioning */
+    .glyph-btn:nth-child(1) { top: 0; left: 50%; transform: translateX(-50%); }
+    .glyph-btn:nth-child(2) { top: 25%; right: 0; }
+    .glyph-btn:nth-child(3) { bottom: 15%; right: 15%; }
+    .glyph-btn:nth-child(4) { bottom: 15%; left: 15%; }
+    .glyph-btn:nth-child(5) { top: 25%; left: 0; }
+
+    .center-logo {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 3rem;
+      animation: rotate-pulse 8s ease-in-out infinite;
+      filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.5));
+    }
+
+    @keyframes rotate-pulse {
+      0%, 100% { transform: translate(-50%, -50%) rotate(0deg) scale(1); }
+      25% { transform: translate(-50%, -50%) rotate(90deg) scale(1.1); }
+      50% { transform: translate(-50%, -50%) rotate(180deg) scale(1); }
+      75% { transform: translate(-50%, -50%) rotate(270deg) scale(1.1); }
+    }
+
+    .glyph-output {
+      min-height: 200px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 15px;
+      padding: 2rem;
+      margin: 2rem 0;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+    }
+
+    .glyph-description {
+      display: none;
+      animation: fadeInUp 0.6s ease;
+    }
+
+    .glyph-description.active {
+      display: block;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .glyph-title {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .layer-info {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+      padding: 1.5rem;
+      margin: 1rem 0;
+      border-left: 4px solid;
+    }
+
+    .dopamine { border-left-color: #00d4ff; }
+    .rules { border-left-color: #ff6b6b; }
+    .game { border-left-color: #4ecdc4; }
+    .equilibrium { border-left-color: #45b7d1; }
+    .illusion { border-left-color: #f7b731; }
+
+    .code-sample {
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 8px;
+      padding: 1rem;
+      margin: 1rem 0;
+      font-family: 'Courier New', monospace;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      overflow-x: auto;
+    }
+
+    .demo-link {
+      display: inline-block;
+      padding: 1rem 2rem;
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      color: white;
+      text-decoration: none;
+      border-radius: 25px;
+      margin: 1rem 0;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    .demo-link:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    }
+
+    .stack-visualization {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1rem;
+      margin: 2rem 0;
+    }
+
+    .stack-layer {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      padding: 1rem;
+      text-align: center;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .stack-layer:hover {
+      transform: translateY(-5px);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .neural-pathway {
+      position: absolute;
+      width: 2px;
+      background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      animation: pulse-flow 3s ease-in-out infinite;
+    }
+
+    @keyframes pulse-flow {
+      0%, 100% { opacity: 0.2; }
+      50% { opacity: 0.8; }
+    }
+
+    @media (max-width: 768px) {
+      .glyph-container {
+        width: 200px;
+        height: 200px;
+      }
+      
+      .glyph-btn {
+        width: 60px;
+        height: 60px;
+        font-size: 2rem;
+      }
+      
+      .stack-visualization {
+        grid-template-columns: 1fr;
+      }
+      
+      h1 {
+        font-size: 2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="cosmic-background"></div>
+  
+  <div class="container">
+    <h1>🌀 Ukusoma: Signal Noise Toolkit</h1>
+    <p class="subtitle">PAIRS@JH • Five-Glyph Stack • Neurocosmic Architecture</p>
+    
+    <div class="pentad-wheel">
+      <div class="glyph-container">
+        <button class="glyph-btn" onclick="selectGlyph('dopamine', '🌊')">🌊</button>
+        <button class="glyph-btn" onclick="selectGlyph('rules', '❤️')">❤️</button>
+        <button class="glyph-btn" onclick="selectGlyph('game', '🔁')">🔁</button>
+        <button class="glyph-btn" onclick="selectGlyph('equilibrium', '🐬')">🐬</button>
+        <button class="glyph-btn" onclick="selectGlyph('illusion', '📡')">📡</button>
+        <div class="center-logo">🌀</div>
+      </div>
+    </div>
+
+    <div id="glyph-output" class="glyph-output">
+      <div class="glyph-description active" id="default">
+        <div class="glyph-title">
+          <span>🌀</span>
+          <span>The Five-Glyph Stack Awaits</span>
+        </div>
+        <p>Select a glyph to explore the neurocosmic layers of the PAIRS@JH architecture. Each symbol represents a temporal, symbolic, and functional layer in our recursive system.</p>
+        
+        <div class="stack-visualization">
+          <div class="stack-layer dopamine">
+            <div>🌊</div>
+            <div>Dopamine</div>
+            <div>Meaning</div>
+          </div>
+          <div class="stack-layer rules">
+            <div>❤️</div>
+            <div>Rules</div>
+            <div>Law</div>
+          </div>
+          <div class="stack-layer game">
+            <div>🔁</div>
+            <div>Game</div>
+            <div>Sociology</div>
+          </div>
+          <div class="stack-layer equilibrium">
+            <div>🐬</div>
+            <div>Equilibrium</div>
+            <div>Politics</div>
+          </div>
+          <div class="stack-layer illusion">
+            <div>📡</div>
+            <div>Illusion</div>
+            <div>Religion</div>
+          </div>
+        </div>
+        
+        <p><strong>Current Implementation:</strong> Blood Type Compatibility Simulator</p>
+        <a href="#blood-simulator" class="demo-link" onclick="loadBloodSimulator()">🩸 Launch Blood Match Engine</a>
+      </div>
+
+      <div class="glyph-description" id="dopamine">
+        <div class="glyph-title">
+          <span>🌊</span>
+          <span>Dopamine (Meaning) — Molecular Substrate</span>
+        </div>
+        <div class="layer-info dopamine">
+          <strong>Neural Layer:</strong> Molecular/Synaptic/Prior<br>
+          <strong>Technical Layer:</strong> .csv data, static priors, ESRD donor phenotypes<br>
+          <strong>Function:</strong> Raw meaning signals, the spark of life-critical data
+        </div>
+        <p>At the foundation, like dopamine pulses that spark thought and action, your CSV phenotype data—blood types of donors and recipients—are the molecular signals of your system. These aren't just numbers; they encode life-critical compatibility rules in synaptic bursts.</p>
+        <div class="code-sample">
+// CSV: The molecular truth<br>
+donor_id,blood_type,rh_factor,phenotype<br>
+D001,O,negative,O-<br>
+D002,AB,positive,AB+<br>
+R001,A,positive,A+
+        </div>
+        <p>This is the <strong>static prior</strong>—the single source of truth from which all recursion flows. Without this neurochemical trigger, no templating, no UI, no ethical matchmaking exists.</p>
+      </div>
+
+      <div class="glyph-description" id="rules">
+        <div class="glyph-title">
+          <span>❤️</span>
+          <span>Rules (Law) — Cellular Boundaries</span>
+        </div>
+        <div class="layer-info rules">
+          <strong>Neural Layer:</strong> Cellular/Axonal/Dynamic<br>
+          <strong>Technical Layer:</strong> .py Flask backend, algorithm enforcement<br>
+          <strong>Function:</strong> Ethical boundaries, compatibility validation
+        </div>
+        <p>The Flask backend—your algorithm—is the cellular membrane and axonal pathways. It filters, transforms, and routes. It enforces rules: compatible blood types, fairness thresholds, error states. This is your dynamic governance where biology meets law.</p>
+        <div class="code-sample">
+def calculate_compatibility(donor, recipient):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;# The ethics coded: Is this match just?<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if can_donate(donor.type, recipient.type):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return FairnessScore(0.9, "COMPATIBLE")<br>
+&nbsp;&nbsp;&nbsp;&nbsp;return FairnessScore(0.4, "INCOMPATIBLE")
+        </div>
+        <p>The fairness score calculation is a <strong>microcosm of ethics</strong>—a coded embodiment of the IRB's silent question: "Is this match just?"</p>
+        <a href="#blood-simulator" class="demo-link" onclick="loadBloodSimulator()">🧬 See Rules in Action</a>
+      </div>
+
+      <div class="glyph-description" id="game">
+        <div class="glyph-title">
+          <span>🔁</span>
+          <span>Game (Sociology) — Recursive Systems</span>
+        </div>
+        <div class="layer-info game">
+          <strong>Neural Layer:</strong> Ganglionic/Relay/Temporal<br>
+          <strong>Technical Layer:</strong> .jinja templates, combinatorial rendering<br>
+          <strong>Function:</strong> Social coordination, recursive templating
+        </div>
+        <p>Jinja templates—recursive, combinatorial engines—are the ganglionic relays. They coordinate input and output, mediating between backend logic and user interaction. This is your game space: actors (donors, recipients, clinicians), rules, and recursive dance.</p>
+        <div class="code-sample">
+{% for match in compatibility_matrix %}<br>
+&nbsp;&nbsp;&lt;div class="match {{ 'valid' if match.score > 0.7 else 'invalid' }}"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{{ match.donor }} → {{ match.recipient }}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Score: {{ match.fairness_score | round(2) }}<br>
+&nbsp;&nbsp;&lt;/div&gt;<br>
+{% endfor %}
+        </div>
+        <p>Every template call is a <strong>recursive move in the sociological game</strong>—a cycle of asking, rendering, responding, updating. Social meaning and technical recursion entwine.</p>
+      </div>
+
+      <div class="glyph-description" id="equilibrium">
+        <div class="glyph-title">
+          <span>🐬</span>
+          <span>Equilibrium (Politics) — Network Stability</span>
+        </div>
+        <div class="layer-info equilibrium">
+          <strong>Neural Layer:</strong> Hippocampus/Network/Static<br>
+          <strong>Technical Layer:</strong> .html/.js frontend, UX feedback loops<br>
+          <strong>Function:</strong> Trust stabilization, political aesthetics
+        </div>
+        <p>HTML and frontend JS, rich with UX feedback loops, represent the hippocampal networks. They encode static representations of a dynamic system. Here lies <strong>institutional equilibrium</strong>—the politics of organ exchange, balancing supply and demand, transparency and privacy.</p>
+        <div class="code-sample">
+// Visual narrative enforces trust<br>
+function createGlyph(text, isValid) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;const glyph = document.createElement('span');<br>
+&nbsp;&nbsp;&nbsp;&nbsp;glyph.classList.add('glyph', isValid ? 'valid' : 'invalid');<br>
+&nbsp;&nbsp;&nbsp;&nbsp;glyph.textContent = text;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;return glyph; // Political aesthetics meet cognition<br>
+}
+        </div>
+        <p>This is where <strong>visual narrative enforces trust</strong>, where political aesthetics and user cognition meet to stabilize an otherwise chaotic game.</p>
+        <a href="#blood-simulator" class="demo-link" onclick="loadBloodSimulator()">🎭 Experience the Interface</a>
+      </div>
+
+      <div class="glyph-description" id="illusion">
+        <div class="glyph-title">
+          <span>📡</span>
+          <span>Illusion (Religion) — Sacred Signal</span>
+        </div>
+        <div class="layer-info illusion">
+          <strong>Neural Layer:</strong> Insular/Gradient/Flourish<br>
+          <strong>Technical Layer:</strong> .yaml API/infra, remote abstraction<br>
+          <strong>Function:</strong> Sacred veil, cosmic faith in code
+        </div>
+        <p>Your API and YAML infrastructure—the remote, abstract layer—is the insular cortex's flourish. The sacred veil of signal and noise, meaning and illusion. This layer is the <strong>religious experience of data</strong>—the prayer whispered to the server, the cosmic call to the cloud.</p>
+        <div class="code-sample">
+# YAML: Sacred geometry of networked ethics<br>
+api:<br>
+&nbsp;&nbsp;endpoints:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;- /simulate?donor={type}&recipient={type}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;- /match/fairness<br>
+&nbsp;&nbsp;faith: "illusion of control"<br>
+&nbsp;&nbsp;promise: "transcendence through code"
+        </div>
+        <p>This holds the <strong>promise of transcendence</strong>: that from cold data and rigid rules emerges a system capable of honoring life's ultimate mystery. The illusion of control, the faith in code, the sacred geometry of networked ethics.</p>
+      </div>
+    </div>
+
+    <div id="blood-simulator-container" style="display: none;">
+      <iframe id="blood-simulator-frame" width="100%" height="800" frameborder="0" style="border-radius: 15px; background: white;"></iframe>
+    </div>
+  </div>
+
+  <script>
+    function selectGlyph(glyphType, emoji) {
+      // Hide all descriptions
+      const descriptions = document.querySelectorAll('.glyph-description');
+      descriptions.forEach(desc => {
+        desc.classList.remove('active');
+      });
+      
+      // Show selected description
+      const selected = document.getElementById(glyphType);
+      if (selected) {
+        selected.classList.add('active');
+      }
+      
+      // Add pulse effect to center logo
+      const centerLogo = document.querySelector('.center-logo');
+      centerLogo.style.animation = 'none';
+      setTimeout(() => {
+        centerLogo.style.animation = 'rotate-pulse 8s ease-in-out infinite';
+        centerLogo.textContent = emoji;
+      }, 100);
+      
+      // Hide blood simulator if open
+      document.getElementById('blood-simulator-container').style.display = 'none';
+    }
+
+    function loadBloodSimulator() {
+      const container = document.getElementById('blood-simulator-container');
+      const frame = document.getElementById('blood-simulator-frame');
+      
+      // Create the blood simulator content as a data URL
+      const simulatorHTML = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blood Type Compatibility Simulator</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+    .header {
+      background: linear-gradient(135deg, #e74c3c, #c0392b);
+      color: white;
+      padding: 2rem;
+      text-align: center;
+    }
+    .header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+    .main-content { padding: 2rem; }
+    .simulator-section {
+      background: white;
+      border-radius: 15px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    }
+    .simulator-controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      align-items: end;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+    .form-group label {
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: #2c3e50;
+    }
+    .form-group select {
+      padding: 0.75rem;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 1rem;
+      background: white;
+      transition: all 0.3s ease;
+    }
+    .form-group select:focus {
+      outline: none;
+      border-color: #e74c3c;
+      box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
+    }
+    .simulate-btn {
+      padding: 0.75rem 2rem;
+      background: linear-gradient(135deg, #e74c3c, #c0392b);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      height: fit-content;
+    }
+    .simulate-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
+    }
+    .result-section {
+      background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+      border-radius: 15px;
+      padding: 2rem;
+      margin-top: 2rem;
+      display: none;
+      animation: slideIn 0.5s ease;
+    }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .blood-type-display {
+      display: flex;
+      justify-content: space-around;
+      margin: 2rem 0;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .blood-type-card {
+      background: white;
+      border-radius: 15px;
+      padding: 1.5rem;
+      text-align: center;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      min-width: 200px;
+      flex: 1;
+    }
+    .blood-type-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      font-weight: bold;
+      margin: 0 auto 1rem;
+      color: white;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+    .blood-type-icon.compatible {
+      background: linear-gradient(135deg, #27ae60, #2ecc71);
+    }
+    .blood-type-icon.incompatible {
+      background: linear-gradient(135deg, #e74c3c, #c0392b);
+    }
+    .compatibility-score {
+      background: white;
+      border-radius: 15px;
+      padding: 2rem;
+      text-align: center;
+      margin-top: 2rem;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    .score-value {
+      font-size: 3rem;
+      font-weight: bold;
+      margin: 1rem 0;
+    }
+    .score-value.high { color: #27ae60; }
+    .score-value.low { color: #e74c3c; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🩸 Blood Type Compatibility Simulator</h1>
+      <p>Five-Glyph Stack Implementation: Rules (❤️) + Equilibrium (🐬) Layers</p>
+    </div>
+    <div class="main-content">
+      <div class="simulator-section">
+        <h2>Match Simulation</h2>
+        <div class="simulator-controls">
+          <div class="form-group">
+            <label for="donor">Donor Blood Type:</label>
+            <select id="donor">
+              <option value="">Select donor type</option>
+              <option value="O+">O+ (O Positive)</option>
+              <option value="O-">O- (O Negative)</option>
+              <option value="A+">A+ (A Positive)</option>
+              <option value="A-">A- (A Negative)</option>
+              <option value="B+">B+ (B Positive)</option>
+              <option value="B-">B- (B Negative)</option>
+              <option value="AB+">AB+ (AB Positive)</option>
+              <option value="AB-">AB- (AB Negative)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="recipient">Recipient Blood Type:</label>
+            <select id="recipient">
+              <option value="">Select recipient type</option>
+              <option value="O+">O+ (O Positive)</option>
+              <option value="O-">O- (O Negative)</option>
+              <option value="A+">A+ (A Positive)</option>
+              <option value="A-">A- (A Negative)</option>
+              <option value="B+">B+ (B Positive)</option>
+              <option value="B-">B- (B Negative)</option>
+              <option value="AB+">AB+ (AB Positive)</option>
+              <option value="AB-">AB- (AB Negative)</option>
+            </select>
+          </div>
+          <button id="simulateBtn" class="simulate-btn">Analyze Match</button>
+        </div>
+        <div id="result" class="result-section">
+                  <div id="result" class="result-section">
+          <div class="blood-type-display">
+            <div class="blood-type-card">
+              <div id="donorIcon" class="blood-type-icon">?</div>
+              <div id="donorLabel">Donor</div>
+            </div>
+            <div class="blood-type-card">
+              <div id="recipientIcon" class="blood-type-icon">?</div>
+              <div id="recipientLabel">Recipient</div>
+            </div>
+          </div>
+          <div class="compatibility-score">
+            <h3>Compatibility Score</h3>
+            <div id="score" class="score-value">--</div>
+            <p id="verdict">Awaiting match simulation...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function isCompatible(donor, recipient) {
+      // Simple compatibility logic (expand as needed)
+      const universalDonor = "O-";
+      const universalRecipient = "AB+";
+      if (donor === universalDonor) return true;
+      if (recipient === universalRecipient) return true;
+      return donor === recipient;
+    }
+
+    function simulateMatch() {
+      const donor = document.getElementById("donor").value;
+      const recipient = document.getElementById("recipient").value;
+      const resultSection = document.getElementById("result");
+
+      if (!donor || !recipient) return;
+
+      const compatible = isCompatible(donor, recipient);
+
+      // Update icons
+      const donorIcon = document.getElementById("donorIcon");
+      const recipientIcon = document.getElementById("recipientIcon");
+
+      donorIcon.textContent = donor;
+      recipientIcon.textContent = recipient;
+
+      donorIcon.className = "blood-type-icon " + (compatible ? "compatible" : "incompatible");
+      recipientIcon.className = "blood-type-icon " + (compatible ? "compatible" : "incompatible");
+
+      // Score
+      const score = document.getElementById("score");
+      const verdict = document.getElementById("verdict");
+
+      if (compatible) {
+        score.textContent = "0.95";
+        score.className = "score-value high";
+        verdict.textContent = "✅ Match Compatible — Ethical Alignment Possible";
+      } else {
+        score.textContent = "0.40";
+        score.className = "score-value low";
+        verdict.textContent = "❌ Incompatible — Match Rejected";
+      }
+
+      resultSection.style.display = "block";
+    }
+
+    document.getElementById("simulateBtn").addEventListener("click", simulateMatch);
+  </script>
+</body>
+</html>
+`;
+
+      const blob = new Blob([simulatorHTML], { type: 'text/html' });
+      const blobURL = URL.createObjectURL(blob);
+      frame.src = blobURL;
+      container.style.display = 'block';
+    }
+  </script>
+</body>
+</html>

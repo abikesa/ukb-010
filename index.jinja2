@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blood Type Compatibility Simulator</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #e74c3c, #c0392b);
+      color: white;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    .header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .header p {
+      font-size: 1.1rem;
+      opacity: 0.9;
+    }
+
+    .main-content {
+      padding: 2rem;
+    }
+
+    .simulator-section {
+      background: white;
+      border-radius: 15px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .simulator-controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      align-items: end;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-group label {
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: #2c3e50;
+    }
+
+    .form-group select {
+      padding: 0.75rem;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 1rem;
+      background: white;
+      transition: all 0.3s ease;
+    }
+
+    .form-group select:focus {
+      outline: none;
+      border-color: #e74c3c;
+      box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
+    }
+
+    .simulate-btn {
+      padding: 0.75rem 2rem;
+      background: linear-gradient(135deg, #e74c3c, #c0392b);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      height: fit-content;
+    }
+
+    .simulate-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
+    }
+
+    .simulate-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .result-section {
+      background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+      border-radius: 15px;
+      padding: 2rem;
+      margin-top: 2rem;
+      display: none;
+      animation: slideIn 0.5s ease;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .blood-type-display {
+      display: flex;
+      justify-content: space-around;
+      margin: 2rem 0;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .blood-type-card {
+      background: white;
+      border-radius: 15px;
+      padding: 1.5rem;
+      text-align: center;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      min-width: 200px;
+      flex: 1;
+    }
+
+    .blood-type-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      font-weight: bold;
+      margin: 0 auto 1rem;
+      color: white;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .blood-type-icon.compatible {
+      background: linear-gradient(135deg, #27ae60, #2ecc71);
+    }
+
+    .blood-type-icon.incompatible {
+      background: linear-gradient(135deg, #e74c3c, #c0392b);
+    }
+
+    .compatibility-score {
+      background: white;
+      border-radius: 15px;
+      padding: 2rem;
+      text-align: center;
+      margin-top: 2rem;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .score-value {
+      font-size: 3rem;
+      font-weight: bold;
+      margin: 1rem 0;
+    }
+
+    .score-value.high { color: #27ae60; }
+    .score-value.low { color: #e74c3c; }
+
+    .reference-table {
+      background: white;
+      border-radius: 15px;
+      padding: 2rem;
+      margin-top: 2rem;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .reference-table h3 {
+      color: #2c3e50;
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+
+    .compatibility-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .blood-group-card {
+      background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+      border-radius: 10px;
+      padding: 1.5rem;
+      text-align: center;
+    }
+
+    .blood-group-card h4 {
+      color: #2c3e50;
+      margin-bottom: 0.5rem;
+      font-size: 1.5rem;
+    }
+
+    .can-donate-to {
+      color: #27ae60;
+      font-weight: 600;
+      margin-top: 0.5rem;
+    }
+
+    .essay-section {
+      background: white;
+      border-radius: 15px;
+      padding: 2rem;
+      margin-top: 2rem;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .essay-section h2 {
+      color: #2c3e50;
+      border-bottom: 3px solid #e74c3c;
+      padding-bottom: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .essay-section p {
+      line-height: 1.6;
+      color: #34495e;
+      margin-bottom: 1rem;
+    }
+
+    @media (max-width: 768px) {
+      .simulator-controls {
+        grid-template-columns: 1fr;
+      }
+      
+      .blood-type-display {
+        flex-direction: column;
+      }
+      
+      .header h1 {
+        font-size: 2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🩸 Blood Type Compatibility Simulator</h1>
+      <p>Advanced blood donation matching system with real-time compatibility analysis</p>
+    </div>
+
+    <div class="main-content">
+      <div class="simulator-section">
+        <h2>Match Simulation</h2>
+        <div class="simulator-controls">
+          <div class="form-group">
+            <label for="donor">Donor Blood Type:</label>
+            <select id="donor">
+              <option value="">Select donor type</option>
+              <option value="O+">O+ (O Positive)</option>
+              <option value="O-">O- (O Negative)</option>
+              <option value="A+">A+ (A Positive)</option>
+              <option value="A-">A- (A Negative)</option>
+              <option value="B+">B+ (B Positive)</option>
+              <option value="B-">B- (B Negative)</option>
+              <option value="AB+">AB+ (AB Positive)</option>
+              <option value="AB-">AB- (AB Negative)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="recipient">Recipient Blood Type:</label>
+            <select id="recipient">
+              <option value="">Select recipient type</option>
+              <option value="O+">O+ (O Positive)</option>
+              <option value="O-">O- (O Negative)</option>
+              <option value="A+">A+ (A Positive)</option>
+              <option value="A-">A- (A Negative)</option>
+              <option value="B+">B+ (B Positive)</option>
+              <option value="B-">B- (B Negative)</option>
+              <option value="AB+">AB+ (AB Positive)</option>
+              <option value="AB-">AB- (AB Negative)</option>
+            </select>
+          </div>
+
+          <button id="simulateBtn" class="simulate-btn">Analyze Match</button>
+        </div>
+
+        <div id="result" class="result-section">
+          <div class="blood-type-display">
+            <div class="blood-type-card">
+              <div id="donorIcon" class="blood-type-icon"></div>
+              <h3>Donor</h3>
+              <p id="donorType"></p>
+            </div>
+            <div class="blood-type-card">
+              <div id="recipientIcon" class="blood-type-icon"></div>
+              <h3>Recipient</h3>
+              <p id="recipientType"></p>
+            </div>
+          </div>
+
+          <div class="compatibility-score">
+            <h3>Compatibility Analysis</h3>
+            <div id="scoreValue" class="score-value"></div>
+            <div id="compatibilityStatus"></div>
+            <div id="riskAssessment"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="reference-table">
+        <h3>Blood Type Compatibility Reference</h3>
+        <div class="compatibility-grid">
+          <div class="blood-group-card">
+            <h4>O- Universal Donor</h4>
+            <p>Can donate to everyone</p>
+            <div class="can-donate-to">→ O+, O-, A+, A-, B+, B-, AB+, AB-</div>
+          </div>
+          <div class="blood-group-card">
+            <h4>AB+ Universal Recipient</h4>
+            <p>Can receive from everyone</p>
+            <div class="can-donate-to">← O+, O-, A+, A-, B+, B-, AB+, AB-</div>
+          </div>
+          <div class="blood-group-card">
+            <h4>A Type Blood</h4>
+            <p>A+ can donate to A+, AB+<br>A- can donate to A+, A-, AB+, AB-</p>
+          </div>
+          <div class="blood-group-card">
+            <h4>B Type Blood</h4>
+            <p>B+ can donate to B+, AB+<br>B- can donate to B+, B-, AB+, AB-</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="essay-section">
+        <h2>Understanding Blood Type Compatibility</h2>
+        <p>
+          Blood type compatibility is crucial for safe transfusions. The ABO blood group system, discovered by Karl Landsteiner in 1901, categorizes blood into four main types: A, B, AB, and O. Each type has specific antigens on red blood cells and corresponding antibodies in plasma.
+        </p>
+        <p>
+          The Rh factor (positive or negative) adds another layer of complexity. Rh-negative individuals can only receive Rh-negative blood, while Rh-positive individuals can receive both positive and negative blood of their ABO type.
+        </p>
+        <p>
+          Type O- blood is considered the "universal donor" because it lacks A, B, and Rh antigens, making it compatible with all blood types in emergency situations. Conversely, AB+ individuals are "universal recipients" as they have all antigens and won't react to any blood type.
+        </p>
+        <p>
+          Our compatibility scoring system evaluates matches based on ABO and Rh compatibility, with perfect matches scoring 100% and incompatible combinations receiving lower scores to indicate transfusion risks.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const donorSelect = document.getElementById('donor');
+    const recipientSelect = document.getElementById('recipient');
+    const simulateBtn = document.getElementById('simulateBtn');
+    const resultDiv = document.getElementById('result');
+
+    // Blood type compatibility matrix
+    const compatibilityMatrix = {
+      'O-': ['O-', 'O+', 'A-', 'A+', 'B-', 'B+', 'AB-', 'AB+'],
+      'O+': ['O+', 'A+', 'B+', 'AB+'],
+      'A-': ['A-', 'A+', 'AB-', 'AB+'],
+      'A+': ['A+', 'AB+'],
+      'B-': ['B-', 'B+', 'AB-', 'AB+'],
+      'B+': ['B+', 'AB+'],
+      'AB-': ['AB-', 'AB+'],
+      'AB+': ['AB+']
+    };
+
+    function calculateCompatibility(donor, recipient) {
+      const compatible = compatibilityMatrix[donor]?.includes(recipient) || false;
+      
+      let score = 0;
+      let riskLevel = '';
+      
+      if (compatible) {
+        if (donor === recipient) {
+          score = 100;
+          riskLevel = 'Perfect Match - No Risk';
+        } else if (donor === 'O-') {
+          score = 95;
+          riskLevel = 'Universal Donor - Minimal Risk';
+        } else if (recipient === 'AB+') {
+          score = 90;
+          riskLevel = 'Universal Recipient - Low Risk';
+        } else {
+          score = 85;
+          riskLevel = 'Compatible - Low Risk';
+        }
+      } else {
+        score = 25;
+        riskLevel = 'Incompatible - High Risk of Adverse Reaction';
+      }
+      
+      return { compatible, score, riskLevel };
+    }
+
+    function updateDisplay(donor, recipient, analysis) {
+      const donorIcon = document.getElementById('donorIcon');
+      const recipientIcon = document.getElementById('recipientIcon');
+      const donorType = document.getElementById('donorType');
+      const recipientType = document.getElementById('recipientType');
+      const scoreValue = document.getElementById('scoreValue');
+      const compatibilityStatus = document.getElementById('compatibilityStatus');
+      const riskAssessment = document.getElementById('riskAssessment');
+
+      // Update blood type displays
+      donorIcon.textContent = donor;
+      recipientIcon.textContent = recipient;
+      donorType.textContent = `Blood Type: ${donor}`;
+      recipientType.textContent = `Blood Type: ${recipient}`;
+
+      // Update compatibility styling
+      const iconClass = analysis.compatible ? 'compatible' : 'incompatible';
+      donorIcon.className = `blood-type-icon ${iconClass}`;
+      recipientIcon.className = `blood-type-icon ${iconClass}`;
+
+      // Update score
+      scoreValue.textContent = `${analysis.score}%`;
+      scoreValue.className = `score-value ${analysis.score >= 80 ? 'high' : 'low'}`;
+
+      // Update status
+      const statusIcon = analysis.compatible ? '✅' : '❌';
+      compatibilityStatus.innerHTML = `<h4>${statusIcon} ${analysis.compatible ? 'COMPATIBLE' : 'INCOMPATIBLE'}</h4>`;
+      
+      // Update risk assessment
+      riskAssessment.innerHTML = `<p><strong>Risk Assessment:</strong> ${analysis.riskLevel}</p>`;
+
+      // Show results with animation
+      resultDiv.style.display = 'block';
+    }
+
+    simulateBtn.onclick = () => {
+      const donor = donorSelect.value;
+      const recipient = recipientSelect.value;
+
+      if (!donor || !recipient) {
+        alert("Please select both donor and recipient blood types.");
+        return;
+      }
+
+      const analysis = calculateCompatibility(donor, recipient);
+      updateDisplay(donor, recipient, analysis);
+    };
+
+    // Enable/disable button based on selections
+    function checkSelections() {
+      const hasSelections = donorSelect.value && recipientSelect.value;
+      simulateBtn.disabled = !hasSelections;
+    }
+
+    donorSelect.addEventListener('change', checkSelections);
+    recipientSelect.addEventListener('change', checkSelections);
+    
+    // Initial check
+    checkSelections();
+  </script>
+</body>
+</html>
