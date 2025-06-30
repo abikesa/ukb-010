@@ -1,0 +1,43 @@
+
+body {
+  font-family: Georgia, serif;
+  background: #fefefe;
+  color: #222;
+  text-align: center;
+  padding: 2em;
+}
+.pentad-wheel button {
+  font-size: 2em;
+  margin: 0.5em;
+  cursor: pointer;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  margin: 2rem;
+  background: #fffefa;
+  color: #333;
+  text-align: center;
+}
+
+.pentad-wheel button {
+  font-size: 3rem;
+  margin: 0 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
+  border: none;
+  background: #eee;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.pentad-wheel button:hover {
+  background-color: #cde;
+}
+
+#glyph-output {
+  margin-top: 2rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+  min-height: 3rem;
+}

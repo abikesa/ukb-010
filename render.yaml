@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: ukb-010
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn flask_api:app
+    envVars:
+      - key: FLASK_ENV
+        value: production

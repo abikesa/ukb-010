@@ -1,0 +1,9 @@
+type,id,phenotype
+donor,D1,O+
+donor,D2,A-
+donor,D3,B+
+donor,D4,AB-
+recipient,R1,O+
+recipient,R2,A+
+recipient,R3,B-
+recipient,R4,AB+

@@ -1,0 +1,44 @@
+app_name: ukb-010
+description: A Flask API for simulating donor-recipient matches in a game-theoretic context
+author: Apollo
+license: MIT
+version: 1.0
+
+dependencies:
+  - Flask
+  - Flask-RESTful
+  - numpy
+  - pandas
+
+routes:
+  - path: /simulate
+    method: GET
+    description: Simulate donor-recipient match
+  - path: /
+    method: GET
+    description: Homepage with donor/recipient interface
+  - path: /ukusoma
+    method: GET
+    description: Ukusoma Spiral glyph display
+
+glyphs:
+  - symbol: "🌊"
+    name: "Dopamine"
+    domain: "Meaning"
+    description: "The molecular and synaptic substrate."
+  - symbol: "❤️"
+    name: "Rules"
+    domain: "Law"
+    description: "The cellular, axonal, and ethical boundaries."
+  - symbol: "🔁"
+    name: "Game"
+    domain: "Sociology"
+    description: "Ganglionic relay and recursive systems."
+  - symbol: "🐬"
+    name: "Equilibrium"
+    domain: "Politics"
+    description: "Hippocampal networks and institutional stability."
+  - symbol: "📡"
+    name: "Illusion"
+    domain: "Religion"
+    description: "The insular cortex, gradient, and the sacred."
